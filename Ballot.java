@@ -58,6 +58,7 @@ public class Ballot extends JFrame implements ActionListener{
             JOptionPane.showMessageDialog(this, "Your vote has been recorded.");
             // Disable voting button after user has voted
             voteButton.setEnabled(false);
+            dispose(); // Closes Voting GUI
         }
     }
     private void recordVote(String candidate) {
