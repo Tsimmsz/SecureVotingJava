@@ -38,11 +38,12 @@ public class Login extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == loginButton) {
+    public void actionPerformed(ActionEvent event) {
+        if (event.getSource() == loginButton) {
             // Validate user input and authenticate user
             String username = userField.getText();
             char[] password = passwordField.getPassword();
+            
             // Validate input
             if (username.isEmpty() || password.length == 0) {
                 JOptionPane.showMessageDialog(this, "Please enter a username and password.");
