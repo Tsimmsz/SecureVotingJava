@@ -3,18 +3,21 @@ package SecureVotingJava;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;  
 
-public class Ballot extends JFrame implements ActionListener{
+public class Ballot extends JFrame implements ActionListener {
     private JLabel candidateLabel;
     private JButton voteButton;
     private JRadioButton candidate1, candidate2;
+    private String username;
     
-    public Ballot() {
+    public Ballot(String newUsername) {
         // Create GUI Components
         candidateLabel = new JLabel("Select your preferred candidate:");
         voteButton = new JButton("Vote");
         candidate1 = new JRadioButton("Candidate 1");
         candidate2 = new JRadioButton("Candidate 2");
+        username = newUsername;
 
         // Add radio buttons to a group to ensure only one can be selected at a time
         ButtonGroup candidates = new ButtonGroup();
@@ -51,18 +54,43 @@ public class Ballot extends JFrame implements ActionListener{
             }
             // Record vote
             if (candidate1Selected) {
-                recordVote("Candidate 1");
+                recordVote("Candidate 1", username);
             } else if(candidate2Selected) {
-                recordVote("Candidate 2");
+                recordVote("Candidate 2", username);
             }
             JOptionPane.showMessageDialog(this, "Your vote has been recorded.");
+            
             // Disable voting button after user has voted
             voteButton.setEnabled(false);
             dispose(); // Closes Voting GUI
         }
     }
-    private void recordVote(String candidate) {
-        // TODO: Implement vote recording logic
+    private void recordVote(String candidate, String username) {
+        // TODO create vote hash
+        try {
+            Connection connection = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/voting",
+                "root", "root");
+
+            PreparedStatement st = (PreparedStatement) connection
+                .prepareStatement("INSERT INTO record_vote (username, candidate) VALUES (username=?, candidate=?);");
+
+            st.setString(1, username);
+            st.setString(2, candidate);
+
+            ResultSet rs = st.executeQuery();
+            
+            if (rs.next()) {
+                dispose();
+                Ballot ballot = new Ballot();
+                login.setTitle("Voting App");
+                login.setVisible(true);
+                JOptionPane.showMessageDialog(btnNewButton, "Login Successful");
+            } else {
+                JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
+            }   
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
         return;
     }
 }

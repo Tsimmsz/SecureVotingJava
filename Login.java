@@ -56,12 +56,46 @@ public class Login extends JFrame implements ActionListener {
                 return;
             }
             // Create Ballot
-            new Ballot();
+            Ballot ballot = new Ballot();
         }
     }
 
-    private boolean authenticateUser(String username, char[] password) {
-        // TODO: Implement user authentication logic
-        return true; 
-    }
+    private void authenticateUser(String username, char[] password) {
+        Boolean validated;
+
+        if (Pattern.matches("^[a-zA-Z0-9]{12,}$", password) && Pattern.matches("^[a-zA-Z0-9]{12,}$", username)){
+            validated = true;
+        } else {
+            validated = false;
+        }
+
+        if (validated){
+            try {
+                Connection connection = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/voting",
+                    "root", "root");
+
+                PreparedStatement st = (PreparedStatement) connection
+                    .prepareStatement("SELECT username, password FROM user_accounts WHERE username=? AND password=?);");
+
+                st.setString(1, username);
+                st.setString(2, password);
+
+                ResultSet rs = st.executeQuery();
+                
+                if (rs.next()) {
+                    dispose();
+                    Ballot ballot = new Ballot();
+                    login.setTitle("Voting App");
+                    login.setVisible(true);
+                    JOptionPane.showMessageDialog(btnNewButton, "Login Successful");
+                } else {
+                    JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
+                }   
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(btnNewButton, "Please enter a 12 character alphanumeric password!");
+        }
+    } 
 }
