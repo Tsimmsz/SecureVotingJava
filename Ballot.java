@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class Ballot extends JFrame implements ActionListener {
     private JLabel candidateLabel;
-    private JButton voteButton;
+    private JButton voteButton, btnNewButton;
     private JRadioButton candidate1, candidate2;
     private String username;
     
@@ -81,9 +81,10 @@ public class Ballot extends JFrame implements ActionListener {
             
             if (rs.next()) {
                 dispose();
-                Ballot ballot = new Ballot();
-                login.setTitle("Voting App");
-                login.setVisible(true);
+                Ballot ballot = new Ballot(username);
+                ballot.setTitle("Voting App");
+                ballot.setVisible(true);
+                btnNewButton = new JButton();
                 JOptionPane.showMessageDialog(btnNewButton, "Login Successful");
             } else {
                 JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");

@@ -3,13 +3,15 @@ package SecureVotingJava;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.regex.*;
+import java.sql.*;
 
 public class Login extends JFrame implements ActionListener {
 
     private JLabel userLabel, passwordLabel;
     private JTextField userField;
     private JPasswordField passwordField;
-    private JButton loginButton;
+    private JButton loginButton, btnNewButton;
 
     public Login() {
         // Create GUI components
@@ -56,14 +58,15 @@ public class Login extends JFrame implements ActionListener {
                 return;
             }
             // Create Ballot
-            Ballot ballot = new Ballot();
+            new Ballot(username);
         }
     }
 
-    private void authenticateUser(String username, char[] password) {
+    private boolean authenticateUser(String username, char[] password) {
         Boolean validated;
+        String passwordString = new String(password);
 
-        if (Pattern.matches("^[a-zA-Z0-9]{12,}$", password) && Pattern.matches("^[a-zA-Z0-9]{12,}$", username)){
+        if (Pattern.matches("^[a-zA-Z0-9]{12,}$", passwordString) && Pattern.matches("^[a-zA-Z0-9]$", username)){
             validated = true;
         } else {
             validated = false;
@@ -78,15 +81,16 @@ public class Login extends JFrame implements ActionListener {
                     .prepareStatement("SELECT username, password FROM user_accounts WHERE username=? AND password=?);");
 
                 st.setString(1, username);
-                st.setString(2, password);
+                st.setString(2, passwordString);
 
                 ResultSet rs = st.executeQuery();
                 
                 if (rs.next()) {
                     dispose();
-                    Ballot ballot = new Ballot();
-                    login.setTitle("Voting App");
-                    login.setVisible(true);
+                    Ballot ballot = new Ballot(username);
+                    ballot.setTitle("Voting App");
+                    ballot.setVisible(true);
+                    btnNewButton = new JButton();
                     JOptionPane.showMessageDialog(btnNewButton, "Login Successful");
                 } else {
                     JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
@@ -97,5 +101,6 @@ public class Login extends JFrame implements ActionListener {
         } else {
             JOptionPane.showMessageDialog(btnNewButton, "Please enter a 12 character alphanumeric password!");
         }
+        return validated;
     } 
 }

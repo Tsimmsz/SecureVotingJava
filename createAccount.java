@@ -1,3 +1,5 @@
+package SecureVotingJava;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -6,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
@@ -17,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
+import java.util.regex.*;
 
 public class createAccount extends JFrame {
 
@@ -34,7 +37,7 @@ public class createAccount extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    UserLogin frame = new UserLogin();
+                    Login frame = new Login();
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -46,7 +49,7 @@ public class createAccount extends JFrame {
     /**
      * Create the frame.
      */
-    public CreateUserAccount() {
+    public createAccount() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
@@ -94,9 +97,10 @@ public class createAccount extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 Boolean validated;
                 String userName = textField.getText();
-                String password = passwordField.getText();
+                char[] password = passwordField.getPassword();
+                String passwordString = new String(password);
 
-                if (Pattern.matches("^[a-zA-Z0-9]{12,}$", password) && Pattern.matches("^[a-zA-Z0-9]{12,}$", userName)){
+                if (Pattern.matches("^[a-zA-Z0-9]{12,}$", passwordString) && Pattern.matches("^[a-zA-Z0-9]{12,}$", userName)){
                     validated = true;
                 } else {
                     validated = false;
@@ -108,9 +112,9 @@ public class createAccount extends JFrame {
                             "root", "root");
 
                         PreparedStatement st = (PreparedStatement) connection
-                            .prepareStatement("INSERT INTO user_accounts (username, password) VALUES ("+ userName +", " + password + ");");
+                            .prepareStatement("INSERT INTO user_accounts (username, password) VALUES ("+ userName +", " + passwordString + ");");
 
-                        ResultSet rs = st.executeQuery();
+                        st.executeQuery();
                         
                         dispose();
                         Login login = new Login();
