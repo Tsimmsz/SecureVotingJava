@@ -1,24 +1,117 @@
-package SecureVotingJava;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.votingapp;
 
+/**
+ *
+ * @author Noah
+ */
+import static com.mycompany.votingapp.createAccount.DB_URL;
+import static com.mycompany.votingapp.createAccount.PASS;
+import static com.mycompany.votingapp.createAccount.USER;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.*;  
+import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.math.BigInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Ballot extends JFrame implements ActionListener {
-    private JLabel candidateLabel;
-    private JButton voteButton, btnNewButton;
-    private JRadioButton candidate1, candidate2;
-    private String username;
-    
+
+    private final JLabel candidateLabel;
+    private final JButton voteButton;
+    private final JButton closeBtn;
+    private final JRadioButton candidate1;
+    private final JRadioButton candidate2;
+    private final String username;
+
     public Ballot(String newUsername) {
         // Create GUI Components
         candidateLabel = new JLabel("Select your preferred candidate:");
         voteButton = new JButton("Vote");
+        closeBtn = new JButton("Close");
         candidate1 = new JRadioButton("Candidate 1");
         candidate2 = new JRadioButton("Candidate 2");
         username = newUsername;
+    }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == voteButton) {
+            // Validate user input and record vote
+            boolean candidate1Selected = candidate1.isSelected();
+            boolean candidate2Selected = candidate2.isSelected();
+            // Validate input
+            if (!candidate1Selected && !candidate2Selected) {
+                JOptionPane.showMessageDialog(this, "Please select a candidate.");
+                return;
+            }
+            // Record vote
+            if (candidate1Selected) {
+                try {
+                    recordVote("Candidate 1", username);
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(Ballot.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (candidate2Selected) {
+                try {
+                    recordVote("Candidate 2", username);
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(Ballot.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            JOptionPane.showMessageDialog(this, "Your vote has been recorded.");
+
+            // Disable voting button after user has voted
+            voteButton.setEnabled(false);
+            dispose(); // Closes Voting GUI
+        }
+    }
+
+    private String convertToHex(final byte[] messageDigest) {
+        BigInteger bigint = new BigInteger(1, messageDigest);
+        String hexText = bigint.toString(16);
+        while (hexText.length() < 32) {
+            hexText = "0".concat(hexText);
+        }
+        return hexText;
+    }
+
+    private void recordVote(String candidate, String username) throws NoSuchAlgorithmException {
+        String hash;
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        String input = username + candidate + Instant.now().getEpochSecond();
+        boolean writeSuccessful = true;
+
+        byte[] messageDigest = md.digest(input.getBytes());
+        hash = convertToHex(messageDigest);
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); Statement stmt = conn.createStatement();) {
+            // Execute a query
+            System.out.println("Inserting records into the table...");
+            String sql = "INSERT INTO record_vote(username, candidate) VALUES (" + "'" + username + "'" + ", " + "'" + candidate + "'" + ");";
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            writeSuccessful = false;
+            JOptionPane.showMessageDialog(this, "Error: \n" + e);
+        }
+
+        if (writeSuccessful) {
+            String message = "Your vote hash is: " + hash;
+            JOptionPane.showMessageDialog(closeBtn, message);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(closeBtn, "Vote Unsuccessful");
+        }
+    }
+
+    public void showBallot() {
         // Add radio buttons to a group to ensure only one can be selected at a time
         ButtonGroup candidates = new ButtonGroup();
         candidates.add(candidate1);
@@ -37,61 +130,8 @@ public class Ballot extends JFrame implements ActionListener {
         // Set frame properties
         setTitle("Voting Sysyem Ballot");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 200);
+        setSize(800, 800);
         setLocationRelativeTo(null);
         setVisible(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == voteButton) {
-            // Validate user input and record vote
-            boolean candidate1Selected = candidate1.isSelected();
-            boolean candidate2Selected = candidate2.isSelected();
-            // Validate input
-            if (!candidate1Selected && !candidate2Selected) {
-                JOptionPane.showMessageDialog(this, "Please select a candidate.");
-                return;
-            }
-            // Record vote
-            if (candidate1Selected) {
-                recordVote("Candidate 1", username);
-            } else if(candidate2Selected) {
-                recordVote("Candidate 2", username);
-            }
-            JOptionPane.showMessageDialog(this, "Your vote has been recorded.");
-            
-            // Disable voting button after user has voted
-            voteButton.setEnabled(false);
-            dispose(); // Closes Voting GUI
-        }
-    }
-    private void recordVote(String candidate, String username) {
-        // TODO create vote hash
-        try {
-            Connection connection = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/voting",
-                "root", "root");
-
-            PreparedStatement st = (PreparedStatement) connection
-                .prepareStatement("INSERT INTO record_vote (username, candidate) VALUES (username=?, candidate=?);");
-
-            st.setString(1, username);
-            st.setString(2, candidate);
-
-            ResultSet rs = st.executeQuery();
-            
-            if (rs.next()) {
-                dispose();
-                Ballot ballot = new Ballot(username);
-                ballot.setTitle("Voting App");
-                ballot.setVisible(true);
-                btnNewButton = new JButton();
-                JOptionPane.showMessageDialog(btnNewButton, "Login Successful");
-            } else {
-                JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
-            }   
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
-        return;
     }
 }
