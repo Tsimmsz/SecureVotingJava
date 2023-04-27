@@ -1,15 +1,9 @@
-package com.mycompany.votingapp;
-
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-/**
- *
- * @author Noah
- */
-public class VotingApp extends JFrame {
+public class Main extends JFrame {
     
     private final JButton createAccountBtn;
     private final JButton signInBtn;
@@ -17,7 +11,7 @@ public class VotingApp extends JFrame {
     Login login = new Login();
 
     
-    public VotingApp(){
+    public Main(){
         createAccountBtn = new JButton("Create Account");
         signInBtn = new JButton("Sign in");
     }
@@ -52,7 +46,7 @@ public class VotingApp extends JFrame {
     }
 
     public static void main(String[] args) {
-        VotingApp votingApp = new VotingApp();
+        Main votingApp = new Main();
         votingApp.showWelcome();
     }
 }

@@ -1,16 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.votingapp;
-
-/**
- *
- * @author Noah
- */
-import static com.mycompany.votingapp.createAccount.DB_URL;
-import static com.mycompany.votingapp.createAccount.PASS;
-import static com.mycompany.votingapp.createAccount.USER;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -18,13 +5,16 @@ import java.util.regex.*;
 import java.sql.*;
 
 public class Login extends JFrame implements ActionListener {
-
+    
     private final JLabel userLabel;
     private final JLabel passwordLabel;
     private final JTextField userField;
     private final JPasswordField passwordField;
     private final JButton loginButton;
     private final JButton closeBtn;
+    static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/voting";
+    static final String USER = "root";
+    static final String PASS = "";
 
     public Login() {
         // Create GUI components
@@ -39,6 +29,7 @@ public class Login extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == loginButton) {
+            
             // Validate user input and authenticate user
             String username = userField.getText();
             String password = passwordField.getText();
@@ -48,6 +39,7 @@ public class Login extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please enter a username and password.");
                 return;
             }
+            
             // Create user
             authenticateUser(username, password);
             dispose();
@@ -56,11 +48,12 @@ public class Login extends JFrame implements ActionListener {
 
     private boolean validateLogin(String username, String password) {
         boolean loginValidated;
-        loginValidated = Pattern.matches("^[a-zA-Z0-9]{8,}$", password) && Pattern.matches("^[a-zA-Z0-9]{1,20}$", username);
+        loginValidated = Pattern.matches("^[a-zA-Z0-9]{8,20}$", password) && Pattern.matches("^[a-zA-Z0-9]{1,20}$", username);
         return loginValidated;
     }
 
     private void authenticateUser(String username, String password) {
+        
         boolean loginValidated = validateLogin(username, password);
         boolean readSuccessful = true;
 
