@@ -1,18 +1,13 @@
-## Getting Started
+## User Guide
+A more in depth user guide is available in the user manual, which can be found in the documentation
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Step by Step:
+1. Download Zip folder(<>code -> Download Zip)
+2. Download Jar file(https://dev.mysql.com/downloads/windows/installer/8.0.html)
+3. Download XAMPP(https://www.apachefriends.org/download.html)
+4. Start Apache server and MySQL
+5. Create a new database with the necessary tables
+6. Run in visual studio code
 
-## Folder Structure
 
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Thomas Simmons, Ricky Matherly, Jalen Keller, Noah Caldwell, Lee Hong
