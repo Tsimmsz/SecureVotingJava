@@ -1,3 +1,7 @@
+// Contributers: Thomas Simmons, Ricky Matherly, Jalen Keller, Noah Caldwell, Lee Hong
+// CSCI 4628 Final Project, Dr Elarde
+// 26 April, 2023
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

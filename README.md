@@ -1,5 +1,5 @@
 ## User Guide
-A more in depth user guide is available in the user manual, which can be found in the documentation
+A more in depth user guide is available in the user manual, which can be found in the documentation.
 
 Step by Step:
 1. Download Zip folder(<>code -> Download Zip)
@@ -10,4 +10,4 @@ Step by Step:
 6. Run in visual studio code
 
 
-Thomas Simmons, Ricky Matherly, Jalen Keller, Noah Caldwell, Lee Hong
+Contributors: Thomas Simmons, Ricky Matherly, Jalen Keller, Noah Caldwell, Lee Hong
